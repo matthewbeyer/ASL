@@ -3,7 +3,7 @@
 @extends('layout')
 
 @section('title')
-Reset Password | HoneyMayI
+Reset Password | Honey May I
 @stop
 
 @section('content')
@@ -12,7 +12,7 @@ Reset Password | HoneyMayI
 <div class="container" id="login-block">
     <div class="row">
         <div class="col-sm-6 col-md-4 col-sm-offset-3 col-md-offset-4">
-            <h3 class="animated bounceInDown">"Honey May I"</h3>
+            <h3 class="animated bounceInDown">Reset Your Password</h3>
             <div class="login-box clearfix animated flipInY">
                 <div class="login-logo">
                     <a href="/"><img src="/images/hmilogo.png" alt="Honey May I" /></a>

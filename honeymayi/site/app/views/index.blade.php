@@ -46,12 +46,18 @@
                     <li>
                         <a href="#about" class="scrollto">About Us</a>
                     </li>
+                    @if (!Auth::check())
                     <li>
                         <a href="{{ URL::route('login') }}">Login</a>
                     </li>
                     <li>
                         <a href="{{ URL::route('signup') }}">Join</a>
                     </li>
+                    @else
+                    <li>
+                        <a href="{{ URL::route('questions') }}">Dashboard</a>
+                    </li>
+                    @endif
                 </ul>
             </div><!--End navbar-collapse -->
 
@@ -176,5 +182,20 @@
     </footer>
 
 
+    <script src="http://maps.google.com/maps/api/js?sensor=true"></script>
+    <script>
 
+        var mapPoint = {
+            'lat': 40.720099,
+            'lng': -74.005764,
+            'zoom' : 15,
+            'infoText':'<p>250 W Broadway\
+                                    <br/>New York\
+                                    <br/>NY 10013</p>',
+            'linkText':'View on Google Maps',
+            'mapAddress':'250 W Broadway, New York, NY 10013',
+            'icon': 'assets/images/pin-dark.png'
+        };
+
+    </script>
 @stop

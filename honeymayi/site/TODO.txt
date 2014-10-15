@@ -1,0 +1,38 @@
+- Fix Google+ auth bugs with expiring tokens
+- Make the social links at the bottom of the homepage go somewhere :|
+- T's & C's :|
+- Friend Requests:
+    - Users can have more than one Honey. They can add using usernames or email addresses and this will create a new entry in the ‘userlink’ database
+    - If a user has no Honeys, their dashboard will display information on how to get setup (or maybe it should just show a section like ‘you’re new’ or whatever)
+    - AJAX for checking if a user exists and requesting them as a friend would be ideal.
+    - Adding a user as a Honey will email them to confirm it first
+
+- Dashboard page:
+    - Shows most asked questions, statistics (graphs and stuff), maybe use Chart.js and animate it
+    - Clicking a question will take you to a question detailed information page, saying who answered it with what responses and how often
+
+- Questions page:
+    - Should list the default questions along with the user's custom questions
+    - There will be a 'top 5 questions' you and your partner both ask each other, ordered by frequency and with a column showing how many times it has been asked,
+      and how many times they have said either yes or no, along with that as a percentage
+    - Select a question from the list to ask if (a popup will confirm) - maybe the user could also attach a short message no longer than a tweet.
+    - There will be a link to 'Ask Other' to create a new question. This question will not be shown to other users
+    - Under the user's personal questions, there will be an option to remove them entirely
+
+- Social Integration:
+    - Users should be able to share questions via Facebook, Twitter and Google+, but I need to discuss this with you first
+    - "Sarah said I can go have some beers with the boys" -> Social Networks
+
+========================================================================================================================
+
+---
+AFTER CLASS
+---
+    - On the homepage put a 'How it works' thing
+    - ENCRYPTION:
+        - I need to look into this some more, but on the site you mentioned encryption. For this we need SSL certificates which I will look
+          into setting up on my server, I will have to look into how to store the information securely. Possibly using the user's password
+          as the encryption key, and enforcing strong passwords.
+    - Send confirmation emails about my account changes and a welcome email.
+I'll add to this when I need to...
+ONE TO MANY..

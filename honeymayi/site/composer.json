@@ -6,7 +6,8 @@
 	"type": "project",
 	"require": {
 		"laravel/framework": "4.2.*",
-		"facebook/php-sdk": "~3.2"
+		"facebook/php-sdk": "~3.2",
+        "hybridauth/hybridauth": "3.0.0.*@dev"
 	},
 	"autoload": {
 		"classmap": [

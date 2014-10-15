@@ -17,7 +17,12 @@ class HomeController extends BaseController {
 
 	public function index()
 	{
-		return View::make('index');
+        if (Auth::check()) {
+            // user is logged in, redirect them to the dashboard
+            return Redirect::route('questions');
+        } else {
+            return View::make('index');
+        }
 	}
 
 }

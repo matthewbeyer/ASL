@@ -3,17 +3,16 @@
 use Illuminate\Support\MessageBag;
 
 class UsersController extends BaseController {
-    /*
-     * How will userlink work?
-     *
-     * UserLink where user1 || user2 = User.id
-     * if(UserLink.user1 == User.id) Honey = User.find(UserLink.User2)
-     * $honeyid = ($userlink.user1 == $currentuser.id) ? $userlink.user2 : $userlink.user1
-     */
+
     public function showLogin()
     {
-        // show the form
-        return View::make('auth.login');
+        if (Auth::check()) {
+            // user is already logged in, redirect to the dashboard
+            return Redirect::route('questions');
+        } else {
+            // show the form
+            return View::make('auth.login');
+        }
     }
     public function doLogin()
     {
@@ -21,7 +20,7 @@ class UsersController extends BaseController {
         // validate the info, create rules for the inputs
         $rules = array(
             'email'    => 'required|email', // make sure the email is an actual email
-            'password' => 'required|alphaNum|min:3' // password can only be alphanumeric and has to be greater than 3 characters
+            'password' => 'required'
         );
 
         // run the validation rules on the inputs from the form
@@ -46,8 +45,8 @@ class UsersController extends BaseController {
             // attempt to do the login
             if (Auth::attempt($userdata)) {
                 // validation successful!
-                // redirect them to the questions dashboard
-                return Redirect::to('questions')
+                // redirect them to the page they initially tried to access or the questions dashboard
+                return Redirect::intended('questions')
                     ->with([
                         'alert-type' => 'success',
                         'alert-message' => 'Login successful!'
@@ -78,16 +77,33 @@ class UsersController extends BaseController {
 
     public function showSignup()
     {
-        return View::make('auth.signup');
+        if (Auth::check()) {
+            // user is already logged in, redirect to the dashboard
+            return Redirect::route('questions');
+        } else {
+            if(Session::has('socialprofile')) {
+                $socialprofile = Session::get('socialprofile');
+                $profileID     = Session::get('profileID');
+
+                Session::set('_old_input', [
+                    'firstname' => $socialprofile->getFirstName(),
+                    'surname'   => $socialprofile->getLastName(),
+                    'email'     => $socialprofile->getEmail(),
+                    'username'  => $socialprofile->getDisplayName(),
+                    'profileID' => $profileID
+                ]);
+            }
+            return View::make('auth.signup');
+        }
     }
     public function doSignup()
     {
         $rules = array(
             'firstname'=> 'required',
             'surname'  => 'required',
-            'username'  => 'required',
+            'username' => 'required',
             'email'    => 'required|email',
-            'password' => 'required|alphaNum|min:3|confirmed',
+            'password' => 'required|min:6|confirmed',
             'terms'    => 'required'
         );
 
@@ -101,7 +117,7 @@ class UsersController extends BaseController {
                 ->withInput(Input::except('password', 'password_confirmation')) // send back the input (not the password) so that we can repopulate the form
                 ->with([
                     'alert-type' => 'danger',
-                    'alert-message' => 'Validation errors occoured. Please try again'
+                    'alert-message' => 'Validation errors occoured. Please try again',
                 ]);
         } else {
             $data = Input::except('password_confirmation', 'terms');
@@ -127,8 +143,18 @@ class UsersController extends BaseController {
             } else {
                 $newUser = User::create($data);
                 if ($newUser) {
+                    if (Input::get('profileID') != "") {
+                        $profile = Profile::find(Input::get('profileID'));
+                        // TODO: verify the profile exists (it should do but we must check)
+                        $profile->user_id = $newUser->id;
+                        $profile->save();
+                    }
                     Auth::login($newUser);
-                    return Redirect::to('questions');
+                    return Redirect::to('questions')
+                        ->with([
+                            'alert-type'    => 'success',
+                            'alert-message' => 'Account created successfully!'
+                        ]);
                 } else {
                     return Redirect::to('signup')->with([
                        'alert-type' => 'danger',
@@ -194,8 +220,8 @@ class UsersController extends BaseController {
         // process the form
         // validate the info, create rules for the inputs
         $rules = array(
-            'email'    => 'required|email',                   // make sure the email is an actual email
-            'password' => 'required|alphaNum|min:3|confirmed' // Make sure passwords match and are valid
+            'email'    => 'required|email',          // make sure the email is an actual email
+            'password' => 'required|min:6|confirmed' // Make sure passwords match and are valid
         );
 
         // run the validation rules on the inputs from the form
@@ -238,5 +264,65 @@ class UsersController extends BaseController {
         }
     }
 
+    /**
+     * Show the 'My Account' page
+     */
+    public function showMyAccount()
+    {
+        $user = Auth::user();
+        Session::set('_old_input', [
+            'firstname' => $user->firstname,
+            'surname'   => $user->surname,
+            'email'     => $user->email,
+            'username'  => $user->username
+        ]);
+        return View::make('auth.myaccount');
+    }
 
+    /**
+     * Update the user's account info
+     */
+    public function doAccountUpdate()
+    {
+        $rules = array(
+            'email'    => 'email',
+            'password' => 'min:6|confirmed',
+        );
+
+        // run the validation rules on the inputs from the form
+        $validator = Validator::make(Input::all(), $rules);
+
+        // if the validator fails, redirect back to the form
+        if ($validator->fails()) {
+            return Redirect::to('myaccount')
+                ->withErrors($validator) // send back all errors to the login form
+                ->withInput(Input::except('password', 'password_confirmation')) // send back the input (not the password) so that we can repopulate the form
+                ->with([
+                    'alert-type' => 'danger',
+                    'alert-message' => 'Validation errors occoured. Please try again',
+                ]);
+        } else {
+            $data = Input::except('password_confirmation', 'terms', 'username', '_token');
+            $user = Auth::user();
+            foreach ($data as $key => $value) {
+                if (!empty($data[$key])) {
+                    $user->$key = $value;
+                }
+            }
+            $user->save();
+            return Redirect::to('myaccount')
+                ->with([
+                    'alert-type' => 'success',
+                    'alert-message' => 'Account information successfully updated!'
+                ]);
+        }
+    }
+
+    /**
+     * Show the terms and conditions page
+     */
+    public function terms()
+    {
+        return View::make('auth.terms');
+    }
 }

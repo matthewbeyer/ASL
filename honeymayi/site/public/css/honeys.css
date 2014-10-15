@@ -1,0 +1,22 @@
+/* Honey management pages styles */
+#honeysmain {
+    color: #fff;
+    max-width: 100%;
+    margin-top: 8em;
+    padding: 3em;
+}
+#honeytable th {
+    text-align: center;
+}
+.honeyAdd {
+    float: right;
+    margin-bottom: 0.25em;
+}
+#honeysmain input {
+    color: #333;
+    background-color: rgba(255, 255, 255, 0.8);
+}
+#honeysmain input[type="submit"]:hover {
+    background-color: #333;
+    color: #fefefe;
+}

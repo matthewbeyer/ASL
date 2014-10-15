@@ -3,7 +3,7 @@
 @extends('layout')
 
 @section('title')
-Sign Up | HoneyMayI
+Sign Up | Honey May I
 @stop
 
 @section('content')
@@ -33,6 +33,7 @@ Sign Up | HoneyMayI
                     </div>
                     @endif
                     {{ Form::open(array('url' => 'signup')) }}
+                        {{ Form::hidden('profileID', Input::old('profileID')) }}
                         {{ Form::text('firstname', Input::old('firstname'), ['placeholder' => 'First Name', 'required']) }}
                         {{ Form::text('surname', Input::old('surname'), ['placeholder' => 'Surname', 'required']) }}
                         {{ Form::text('username', Input::old('username'), ['placeholder' => 'Username', 'required']) }}
@@ -40,20 +41,22 @@ Sign Up | HoneyMayI
                         {{ Form::password('password', ['placeholder' => 'Password', 'required']) }}
                         {{ Form::password('password_confirmation', ['placeholder' => 'Confirm Password', 'required']) }}
                         <label class="checkbox">
-                            {{ Form::checkbox('terms', 'agree') }} &nbsp; I agree to the terms.
+                            {{ Form::checkbox('terms', 'agree') }} &nbsp;
+                            I agree to the <a href="{{ URL::route('terms') }}">terms</a>.
                         </label>
                         {{ Form::submit('Join Now', ['class' => 'btn btn-login']) }}
                     {{ Form::close() }}
+                    @if (!isset(Session::get('_old_input')['profileID']))
                     <h3>Connect Via Social Media</h3>
                     <div class="social-login row">
                         <div class="fb-login col-lg-4 col-md-12 animated flipInX">
-                            <a href="{{ URL::route('fblogin') }}" class="btn btn-facebook btn-block"><strong>Facebook</strong></a>
+                            <a href="{{ URL::route('sociallogin', ['network' => 'facebook']) }}" class="btn btn-facebook btn-block"><strong>Facebook</strong></a>
                         </div>
                         <div class="twit-login col-lg-4 col-md-12 animated flipInX">
-                            <a href="#" class="btn btn-twitter btn-block"><strong>Twitter</strong></a>
+                            <a href="{{ URL::route('sociallogin', ['network' => 'twitter']) }}" class="btn btn-twitter btn-block"><strong>Twitter</strong></a>
                         </div>
                         <div class="google-login col-lg-4 col-md-12 animated flipInX">
-                            <a href="#" class="btn btn-google btn-block"><strong>Google +</strong></a>
+                            <a href="{{ URL::route('sociallogin', ['network' => 'google']) }}" class="btn btn-google btn-block"><strong>Google +</strong></a>
                         </div>
                     </div>
 
@@ -66,6 +69,7 @@ Sign Up | HoneyMayI
                             Already have an account? <strong>LOGIN</strong>
                         </a>
                     </div>
+                    @endif
                 </div>
             </div>
 

@@ -36,13 +36,13 @@ Login | Honey May I
                     <h3>Connect Via Social Media</h3>
                     <div class="social-login row">
                         <div class="fb-login col-lg-4 col-md-12 animated flipInX">
-                            <a href="{{ URL::route('fblogin') }}" class="btn btn-facebook btn-block"><strong>Facebook</strong></a>
+                            <a href="{{ URL::route('sociallogin', ['network' => 'facebook']) }}" class="btn btn-facebook btn-block"><strong>Facebook</strong></a>
                         </div>
                         <div class="twit-login col-lg-4 col-md-12 animated flipInX">
-                            <a href="#" class="btn btn-twitter btn-block"><strong>Twitter</strong></a>
+                            <a href="{{ URL::route('sociallogin', ['network' => 'twitter']) }}" class="btn btn-twitter btn-block"><strong>Twitter</strong></a>
                         </div>
                         <div class="google-login col-lg-4 col-md-12 animated flipInX">
-                            <a href="#" class="btn btn-google btn-block"><strong>Google +</strong></a>
+                            <a href="{{ URL::route('sociallogin', ['network' => 'google']) }}" class="btn btn-google btn-block"><strong>Google +</strong></a>
                         </div>
                     </div>
 

@@ -1,5 +1,7 @@
 <?php
 
+use Hybridauth\Hybridauth;
+
 class SocialAuthController extends BaseController {
 
     /**
@@ -24,7 +26,10 @@ class SocialAuthController extends BaseController {
         // FB Login calback
         $code = Input::get('code');
         if (strlen($code) == 0) {
-            return Redirect::to('/')->with('message', 'There was an error communicating with Facebook');
+            return Redirect::to('/')->with([
+                'alert-type'    => 'danger',
+                'alert-message' => 'There was an error communicating with Facebook. Please try again.'
+            ]);
         }
 
         $facebook = new Facebook(Config::get('facebook'));
@@ -33,7 +38,7 @@ class SocialAuthController extends BaseController {
         if ($uid == 0) {
             return Redirect::to('/')->with([
                 'alert-type'    => 'danger',
-                'alert-message' => 'There was an error'
+                'alert-message' => 'There was an error communicating with Facebook. Please try again.'
             ]);
         }
 
@@ -71,5 +76,84 @@ class SocialAuthController extends BaseController {
             'alert-type'    => 'success',
             'alert-message' => 'Successfully logged in with Facebook!'
         ]);
+    }
+
+    /**
+     * Log the user in using a social network
+     *
+     * @param $network The social network we ae using
+     * @return mixed
+     */
+    public function SocialLogin($network)
+    {
+        $network = ucfirst($network);
+
+        $hybridAuth = new Hybridauth(Config::get('hybridauth'));
+        $adapter = $hybridAuth->authenticate($network);
+        $userProfile = $adapter->getUserProfile();
+
+        // Network specific stuff. Some give us emails/usernames, some don't
+        if($network == "Google") {
+            $userProfile->setDisplayName(str_replace(
+                " ",
+                "",
+                $userProfile->getDisplayName()
+            ));
+        } elseif($network == "Twitter") {
+            $fullname = explode(" ", $userProfile->getFirstName());
+            $userProfile->setFirstName($fullname[0]);
+            $userProfile->setLastName($fullname[1]);
+        } elseif($network == "Facebook") {
+
+        }
+
+        // Try and get the user's profile if they have already signed in socially with this network before
+        $profile = Profile::whereUid($userProfile->getIdentifier())->first();
+        if (empty($profile)) {
+            // User's first time using this network to sign in, create profile
+            $profile                      = new Profile;
+            $profile->uid                 = $userProfile->getIdentifier();
+            $profile->access_token        = $userProfile->getAdapter()->getTokens()->accessToken;
+            if(!empty($userProfile->getAdapter()->getTokens()->accessSecretToken)) {
+                $profile->access_token_secret = $userProfile->getAdapter()->getTokens()->accessSecretToken;
+            }
+            // TODO: make sure this succeeds, throw error if not
+            $profile->save();
+        }
+
+        // Find user with the same email to see if they already have an account, maybe from a manual signup or another social network
+        $user = User::where('email', $userProfile->getEmail())->first();
+        if(!is_null($user)) {
+            // User has an account, set the profile's user_id to the user's id
+            $profile->user_id = $user->id;
+            $profile->save();
+        }
+        $user = $profile->user;
+        if (is_null($user)) {
+
+            // This is the user's first time. Redirect them to the sign up page to complete registration
+            return Redirect::route('signup')->with([
+                'socialprofile' => $userProfile,
+                'profileID'     => $profile->id,
+                'alert-type'    => 'info',
+                'alert-message' => 'Please fill in the rest of the sign up form to complete your account setup.'
+            ]);
+        } else {
+            // User already has an account. Log them in and send them to their dashboard
+            Auth::login($user);
+            return Redirect::to('questions')->with([
+                'alert-type'    => 'success',
+                'alert-message' => 'Successfully logged in with ' . $network . '!'
+            ]);
+        }
+    }
+
+    /**
+     * Social login callback
+     */
+    public function SocialLoginCallback()
+    {
+        $endPoint = new \Hybridauth\Endpoint();
+        $endPoint->process();
     }
 }

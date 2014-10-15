@@ -29,19 +29,22 @@ MAIN NAV
             </button>
 
             <!-- ======= LOGO ========-->
-            <a class="navbar-brand scrollto" href="index.html"><img src="/images/hmilogo.png" alt=""/>"Honey May I"</a>
+            <a class="navbar-brand" href="{{ URL::to('') }}"><img src="/images/hmilogo.png" alt=""/>"Honey May I"</a>
 
         </div>
 
         <div id="site-nav" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
                 <li class="sr-only">
-                    <a href="index.html" class="scrollto">Home</a>
+                    <a href="{{ URL::to('') }}">Home</a>
                 <li>
-                    <a href="#" class="scrollto">FAQ's</a>
+                    <a href="#faq">FAQ's</a>
                 </li>
                 <li>
-                    <a href="#" class="scrollto">My Account</a>
+                    <a href="#honeys">Honeys</a>
+                </li>
+                <li>
+                    <a href="{{ URL::route('myaccount') }}" >My Account</a>
                 </li>
                 <li>
                     <a href="{{ URL::to('logout') }}">Logout</a>
@@ -65,6 +68,14 @@ HEADER 2
         <h1>"HONEY MAY I"</h1>
 
         <p>This is your dashboard, but I haven't got round to writing it yet. Coming soon!</p>
+
+        <!--
+        <table class="table">
+            <tr>
+                <th></th>
+            </tr>
+        </table>
+        -->
 
     </div>
 

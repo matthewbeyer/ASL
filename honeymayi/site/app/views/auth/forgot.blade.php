@@ -3,7 +3,7 @@
 @extends('layout')
 
 @section('title')
-Reset Password | HoneyMayI
+Reset Password | Honey May I
 @stop
 
 @section('content')

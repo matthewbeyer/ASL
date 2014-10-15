@@ -26,7 +26,7 @@ body{
 
 .login-box{
 	max-width:480px;	
-	background: transparent url(../img/login-bg-1.png) repeat;	 
+	background: transparent url(../img/login-bg-1.png) repeat;
 	-webkit-border-radius: 8px;
 	-moz-border-radius: 8px;
 	border-radius: 8px;
@@ -172,7 +172,7 @@ label.checkbox input{
     margin: 5px auto;
     color:#FFF;
     text-shadow: 1px 1px 1px #333;
-    width:90%
+    width:90%;
     -webkit-box-shadow:  0px 0px 10px #FFF;
 	-moz-box-shadow:  0px 0px 10px #FFF;
 	box-shadow: 0px 0px 10px #FFF;
@@ -270,7 +270,12 @@ label.checkbox input{
 	animation-delay: .8s;
 }
 
- 
+.login-box.terms {
+    max-width: 100% !important;
+    padding: 1em;
+    color: #fefefe;
+}
+
 /* Mobile Portrait Size to Mobile Landscape Size (devices and browsers)
 =================================================================== */
 @media only screen and (max-width: 479px) {
