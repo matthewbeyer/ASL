@@ -1,0 +1,12 @@
+The terminology used in this app's code is defined below
+
+Question (capitalised) - Describes an instance of the Question class (AKA a single Question) or the class itself
+Question Asked - Describes one ask and, if the askee has answered it, the answer in a boolean format in the 'answer' field
+Asker - The User to have asked a Question, thus creating a Question Asked instance
+Askee - The User a particular Question was asked to, thus creating a Question Asked instance
+User1 & User2 in the userlink table - Each holds the id of a User, the row describing a relationship
+User (capitalised) - Describes an instance of the User class (AKA a single User) or the class itself
+'you' (in a user link request) - The person who initiated the request
+'them' (in a user link request) - The person a user link request was sent to
+'user link' - The relationship between two users
+Honey - Often used in this app inconsistently and therefore is synonymous with 'User'

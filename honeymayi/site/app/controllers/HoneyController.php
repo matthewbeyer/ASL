@@ -8,17 +8,7 @@ class HoneyController extends BaseController {
     public function index()
     {
         $user = Auth::user();
-        $honeys = [];
-        $userlinks = DB::table('userlink')
-            ->where('user1', $user->id)
-            ->orwhere('user2', $user->id)
-            ->get();
-        foreach ($userlinks as $link) {
-            $honeyID = ($link->user1 == $user->id)
-                ? $link->user2
-                : $link->user1;
-            $honeys[] = User::find($honeyID);
-        }
+        $honeys = $user->honeys();
 
         return View::make('honeys.index', ['honeys' => $honeys]);
     }
@@ -43,6 +33,7 @@ class HoneyController extends BaseController {
 
         $validator = Validator::make(Input::all(), $rules);
         if ($validator->fails()) {
+            // Validation errors
             return Redirect::route('honeyAdd')
                 ->withErrors($validator) // send back all errors to the form
                 ->with([
@@ -50,6 +41,14 @@ class HoneyController extends BaseController {
                     'alert-message' => 'Validation errors occurred. Please try again'
                 ]);
         } else {
+            // make sure the user is not trying to add themselves
+            if (Input::get('username') == Auth::user()->username) {
+                return Redirect::route('honeyAdd')
+                    ->with([
+                        'alert-type' => 'warning',
+                        'alert-message' => 'You can\'t add yourself!'
+                    ]);
+            }
             // Find the user they are trying to add
             $user = User::where('username', Input::get('username'))->first();
             if (is_null($user)) {
@@ -63,11 +62,7 @@ class HoneyController extends BaseController {
                 // Correct username
 
                 // First check that the person is not already a Honey
-                $alreadyfriends = (DB::table('userlink')
-                    ->where(['user1' => Auth::user()->id, 'user2' => $user->id])
-                    ->orwhere(['user2' => Auth::user()->id, 'user1' => $user->id])
-                    ->count() !=0 );
-                if ($alreadyfriends) {
+                if (Auth::user()->isHoneysWith($user)) {
                     // They are already friends
                     return Redirect::route('honeyAdd')
                         ->with([
@@ -93,7 +88,12 @@ class HoneyController extends BaseController {
                 DB::table('userlinkrequests')->insert(
                     array('you' => Auth::user()->id, 'them' => $user->id)
                 );
-                // TODO: send the request email here.
+
+                // Mail the user, letting them know of their latest request
+                Mail::send('emails.honeys.request', ['user' => Auth::user()], function($message) use ($user) {
+                    $message->to($user->email)->subject('Honey May I | New Honey Request');
+                });
+
                 return Redirect::route('honeys')
                     ->with([
                         'alert-type' => 'info',
@@ -108,7 +108,59 @@ class HoneyController extends BaseController {
      */
     public function showRequests()
     {
+        $honeys = [];
+        $requests = DB::table('userlinkrequests')
+            ->where('them', Auth::user()->id)
+            ->get();
+        foreach ($requests as $link) {
+            $honeys[] = User::find($link->you);
+        }
+        return View::make('honeys.requests', ['requests' => $honeys]);
+    }
 
+    /**
+     * Accept or decline a honey request
+     *
+     * @param $userID   int    The Honey ID who sent the request
+     * @param $response string Either 'accept' or 'decline'
+     */
+    public function answerRequest($userID, $response)
+    {
+        $pastTense = ($response == "accept") ? 'accepted' : 'declined';
+        // Check if such a request exists
+        $request = DB::table('userlinkrequests')
+            ->where([
+                'them' => Auth::user()->id,
+                'you' => $userID
+            ])
+            ->first();
+        if (is_null($request)) {
+            // No such request
+            return Redirect::route('honeyRequests')
+                ->with([
+                    'alert-type'    => 'danger',
+                    'alert-message' => "The Honey request could not be $pastTense as it doesn't exist (maybe it was already accepted or declined?)"
+                ]);
+        } else {
+            if ($response = 'accept') {
+                // Create a new userlink
+                DB::table('userlink')->insert(
+                    array('user1' => Auth::user()->id, 'user2' => $userID)
+                );
+            }
+            // Delete the Honey request
+            DB::table('userlinkrequests')
+                ->where([
+                    'them' => Auth::user()->id,
+                    'you' => $userID
+                ])
+                ->delete();
+            return Redirect::route('honeyRequests')
+                ->with([
+                    'alert-type'    => 'success',
+                    'alert-message' => "Honey request $pastTense"
+                ]);
+        }
     }
 
     /**
@@ -116,15 +168,23 @@ class HoneyController extends BaseController {
      */
     public function delete($userID)
     {
-        $userlink = DB::table('userlink')
+        $success = DB::table('userlink')
             ->where('user1', $userID)
             ->orwhere('user2', $userID)
             ->delete();
-        return Redirect::route('honeys')
-            ->with([
-                'alert-type'    => 'success',
-                'alert-message' => 'The Honey has been removed.'
-            ]);
+        if ($success) {
+            return Redirect::route('honeys')
+                ->with([
+                    'alert-type'    => 'success',
+                    'alert-message' => 'The Honey has been removed.'
+                ]);
+        } else {
+            return Redirect::route('honeys')
+                ->with([
+                    'alert-type'    => 'danger',
+                    'alert-message' => 'There was an error while trying to remove that Honey.'
+                ]);
+        }
     }
 
 }

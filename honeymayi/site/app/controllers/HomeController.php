@@ -19,7 +19,7 @@ class HomeController extends BaseController {
 	{
         if (Auth::check()) {
             // user is logged in, redirect them to the dashboard
-            return Redirect::route('questions');
+            return Redirect::route('dashboard');
         } else {
             return View::make('index');
         }

@@ -72,7 +72,7 @@ class SocialAuthController extends BaseController {
 
         Auth::login($user);
 
-        return Redirect::to('questions')->with([
+        return Redirect::intended('dashboard')->with([
             'alert-type'    => 'success',
             'alert-message' => 'Successfully logged in with Facebook!'
         ]);
@@ -81,7 +81,7 @@ class SocialAuthController extends BaseController {
     /**
      * Log the user in using a social network
      *
-     * @param $network The social network we ae using
+     * @param $network string The social network we ae using
      * @return mixed
      */
     public function SocialLogin($network)
@@ -93,7 +93,7 @@ class SocialAuthController extends BaseController {
         $userProfile = $adapter->getUserProfile();
 
         // Network specific stuff. Some give us emails/usernames, some don't
-        if($network == "Google") {
+        if($network == "Google" || $network == "Facebook") {
             $userProfile->setDisplayName(str_replace(
                 " ",
                 "",
@@ -103,21 +103,19 @@ class SocialAuthController extends BaseController {
             $fullname = explode(" ", $userProfile->getFirstName());
             $userProfile->setFirstName($fullname[0]);
             $userProfile->setLastName($fullname[1]);
-        } elseif($network == "Facebook") {
-
         }
 
         // Try and get the user's profile if they have already signed in socially with this network before
         $profile = Profile::whereUid($userProfile->getIdentifier())->first();
+
         if (empty($profile)) {
             // User's first time using this network to sign in, create profile
-            $profile                      = new Profile;
-            $profile->uid                 = $userProfile->getIdentifier();
-            $profile->access_token        = $userProfile->getAdapter()->getTokens()->accessToken;
+            $profile                = new Profile;
+            $profile->uid           = $userProfile->getIdentifier();
+            $profile->access_token  = $userProfile->getAdapter()->getTokens()->accessToken;
             if(!empty($userProfile->getAdapter()->getTokens()->accessSecretToken)) {
                 $profile->access_token_secret = $userProfile->getAdapter()->getTokens()->accessSecretToken;
             }
-            // TODO: make sure this succeeds, throw error if not
             $profile->save();
         }
 
@@ -141,7 +139,7 @@ class SocialAuthController extends BaseController {
         } else {
             // User already has an account. Log them in and send them to their dashboard
             Auth::login($user);
-            return Redirect::to('questions')->with([
+            return Redirect::intended('dashboard')->with([
                 'alert-type'    => 'success',
                 'alert-message' => 'Successfully logged in with ' . $network . '!'
             ]);

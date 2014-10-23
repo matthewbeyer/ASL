@@ -1,0 +1,31 @@
+body {
+  background-image: "../images/q-a-bg.png"; }
+
+.questionHoneyMayI {
+  font-size: 24pt; }
+
+h1.question {
+  margin-top: 0.1125em;
+  color: #1f2c37;
+  background-color: #ea923b; }
+
+.birdsEyeStats {
+  background-color: #007470; }
+
+h1.question, .birdsEyeStats {
+  border: 1px solid #1f2c37;
+  padding: 1em; }
+
+.questionProgressBar {
+  height: 2em; }
+  .questionProgressBar .progress-bar {
+    font-size: 100%;
+    line-height: 2em;
+    overflow: hidden; }
+
+.rightBtn {
+  float: right;
+  margin-bottom: 0.25em; }
+
+table tr th, table tr td {
+  text-align: left; }

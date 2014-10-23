@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "105fa9a7aed416dd1bc3ecbf6eaa8c4c",
+    "hash": "019ad8bd4793168684c43e38772449f1",
     "packages": [
         {
             "name": "classpreloader/classpreloader",
@@ -196,13 +196,13 @@
             "version": "3.0.0.x-dev",
             "source": {
                 "type": "git",
-                "url": "https://github.com/hybridauth/hybridauth.git",
-                "reference": "35a710775213e11eefcb5f9000d9411ada4cc758"
+                "url": "https://github.com/noisyscanner/hybridauth.git",
+                "reference": "48daa4c7c07af22fa428876790033b3ab19bf009"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hybridauth/hybridauth/zipball/35a710775213e11eefcb5f9000d9411ada4cc758",
-                "reference": "35a710775213e11eefcb5f9000d9411ada4cc758",
+                "url": "https://api.github.com/repos/noisyscanner/hybridauth/zipball/48daa4c7c07af22fa428876790033b3ab19bf009",
+                "reference": "48daa4c7c07af22fa428876790033b3ab19bf009",
                 "shasum": ""
             },
             "require": {
@@ -215,7 +215,6 @@
                     "Hybridauth": "src/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "(MIT or GPL-3.0+)"
             ],
@@ -228,17 +227,23 @@
             "description": "Open source social sign on PHP library.",
             "homepage": "http://hybridauth.sourceforge.net",
             "keywords": [
-                "OpenId",
                 "facebook",
                 "google",
                 "hybridauth",
                 "login",
                 "oauth",
+                "openid",
                 "social",
                 "twitter",
                 "yahoo"
             ],
-            "time": "2014-10-14 21:05:26"
+            "support": {
+                "email": "hybridauth@gmail.com",
+                "forum": "https://groups.google.com/d/forum/hybridauth",
+                "issues": "https://github.com/hybridauth/hybridauth/issues",
+                "source": "https://github.com/noisyscanner/hybridauth/tree/3.0.0"
+            },
+            "time": "2014-10-18 13:23:49"
         },
         {
             "name": "ircmaxell/password-compat",

@@ -23,7 +23,6 @@ Add Honey | Honey May I
 <!--=== PAGE PRELOADER ===-->
 <div id="page-loader"><span class="page-loader-gif"></span></div>
 
-
 @include('fragments.main-nav')
 
 <!-- ==============================================
@@ -35,7 +34,7 @@ HEADER 2
 
         <h1>Add a Honey</h1>
 
-        <p>To add a new Honey, enter their username below.</p>
+        <p>To add a new Honey, enter their username below and click "Add".</p>
         @if( $errors->count() > 0 )
         <div class="alert alert-danger">
             <button type="button" class="close" data-dismiss="alert">&times;</button>
@@ -46,12 +45,15 @@ HEADER 2
         @endif
         {{ Form::open(['route' => 'honeyAdd']) }}
             <div class="input-group">
-                {{ Form::text('username', '', ['class' => 'form-control']) }}
+                {{ Form::text('username', Input::old('username'), ['class' => 'form-control', 'placeholder' => 'Username']) }}
                 <span class="input-group-btn">
                     {{ Form::submit('Add', ['class' => 'btn btn-submit']) }}
                 </span>
             </div>
         {{ Form::close() }}
+        <p>
+            <a href="{{ URL::route('honeys') }}">&larr; Back to All Honeys</a>
+        </p>
     </div>
 
 </header><!--End header -->

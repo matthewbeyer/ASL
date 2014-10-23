@@ -11,10 +11,15 @@
 |
 */
 
-Route::get('/', ['uses' => 'HomeController@index']);
+Route::get('/', ['uses' => 'HomeController@index']); // Homepage (may redirect to the dashboard if the user is logged in)
+
+Route::get('/dashboard', ['uses' => 'DashboardController@index', 'before' => 'auth', 'as' => 'dashboard']); // Dashboard page
 
 // route to show the login form
-Route::get('login', ['as' => 'login', 'uses' => 'UsersController@showLogin']);
+Route::get('login', [
+    'as' => 'login',
+    'uses' => 'UsersController@showLogin',
+]);
 // route to process the form
 Route::post('login', ['uses' => 'UsersController@doLogin']);
 
@@ -72,15 +77,66 @@ Route::group([
     Route::get('add', ['as' => 'honeyAdd', 'uses' => 'HoneyController@showAdd']);
     Route::post('add', ['as' => 'honeyAdd', 'uses' => 'HoneyController@doAdd']);
 
+    // Show the requests page
+    Route::get('requests', ['as' => 'honeyRequests', 'uses' => 'HoneyController@showRequests']);
+
+    // Accept/Decline requests
+    Route::get('requests/{userID}/{response}', ['as' => 'honeys.answer', 'uses' => 'HoneyController@answerRequest'])
+        ->where(['response' => 'accept|decline']);
+
     // Delete a Honey link
     Route::delete('{userID}', ['as' => 'honeyLinkDestroy', 'uses' => 'HoneyController@delete']);
 });
 
 /**  -------------------------- QUESTIONS --------------------------------- **/
-
-// The questions dashboard page
-Route::get('questions', [
-    'as' => 'questions',
-    'uses' => 'QuestionsController@index',
+Route::group([
     'before' => 'auth'
+], function() {
+    Route::group([
+        'prefix' => 'questions',
+    ], function() {
+        Route::get('{question}/ask', [
+            'as' => 'questions.ask',
+            'uses' => 'QuestionsController@showAsk'
+        ]);
+        Route::post('{question}/ask', [
+            'as' => 'questions.ask',
+            'uses' => 'QuestionsController@doAsk'
+        ]);
+        // Inbox
+        Route::get('inbox', [
+            'as' => 'questions.inbox',
+            'uses' => 'QuestionsController@showInbox'
+        ]);
+        // Say Yes/No to a Question
+        Route::get('inbox/{questionAsked}/{answer}', [
+            'as' => 'questions.answer',
+            'uses' => 'QuestionsController@answer'
+        ])
+            ->where(['answer' => 'yes|no']);
+
+        // /questions/{question}/users/{user} - SHOW information about a given user who has answered a given question
+        Route::get('{question}/users/{user}', [
+            'as' => 'questions.users.show',
+            'uses' => 'QuestionsUsersController@show'
+        ]);
+
+        // Show the questions answered page
+        Route::get('answered', [
+            'as' => 'questions.answered',
+            'uses' => 'QuestionsController@showAnswered'
+        ]);
+    }); // END ROUTE GROUP //
+
+    Route::resource('questions', 'QuestionsController', [
+        'except' => [
+            'edit',
+            'update'
+        ]
+    ]);
+}); // END ROUTE GROUP //
+// Show a given Question Asked (useful for social sharing) ANYONE CAN SEE THIS
+Route::get('questions/asked/{questionAskedID}', [
+    'as' => 'questions.asked.show',
+    'uses' => 'QuestionsAskedController@show'
 ]);

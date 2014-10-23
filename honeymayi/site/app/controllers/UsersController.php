@@ -8,7 +8,7 @@ class UsersController extends BaseController {
     {
         if (Auth::check()) {
             // user is already logged in, redirect to the dashboard
-            return Redirect::route('questions');
+            return Redirect::route('dashboard');
         } else {
             // show the form
             return View::make('auth.login');
@@ -45,8 +45,8 @@ class UsersController extends BaseController {
             // attempt to do the login
             if (Auth::attempt($userdata)) {
                 // validation successful!
-                // redirect them to the page they initially tried to access or the questions dashboard
-                return Redirect::intended('questions')
+                // redirect them to the page they initially tried to access or the dashboard
+                return Redirect::intended('dashboard')
                     ->with([
                         'alert-type' => 'success',
                         'alert-message' => 'Login successful!'
@@ -79,7 +79,7 @@ class UsersController extends BaseController {
     {
         if (Auth::check()) {
             // user is already logged in, redirect to the dashboard
-            return Redirect::route('questions');
+            return Redirect::intened('dashboard');
         } else {
             if(Session::has('socialprofile')) {
                 $socialprofile = Session::get('socialprofile');
@@ -144,21 +144,30 @@ class UsersController extends BaseController {
                 $newUser = User::create($data);
                 if ($newUser) {
                     if (Input::get('profileID') != "") {
-                        $profile = Profile::find(Input::get('profileID'));
-                        // TODO: verify the profile exists (it should do but we must check)
+                        $profileID = Input::get('profileID');
+                        $profile = Profile::find($profileID);
+                        if (is_null($profile)) {
+                            return Redirect::to('signup')
+                                ->withInput(Input::except('password', 'password_confirmation')) // send back the input (not the password) so that we can repopulate the form
+                                ->with([
+                                    'alert-type' => 'warning',
+                                    'alert-message' => 'Profile with ID ' . $profileID . ' not found.',
+                                ]);
+                        }
                         $profile->user_id = $newUser->id;
                         $profile->save();
                     }
                     Auth::login($newUser);
-                    return Redirect::to('questions')
+                    return Redirect::intended('dashboard')
                         ->with([
                             'alert-type'    => 'success',
                             'alert-message' => 'Account created successfully!'
                         ]);
                 } else {
-                    return Redirect::to('signup')->with([
+                    return Redirect::to('signup')
+                        ->with([
                        'alert-type' => 'danger',
-                       'alert-message' => 'An error occoured while creating your account. Please try again later or contact support.'
+                       'alert-message' => 'An error occurred while creating your account. Please try again later or contact support.'
                     ]);
                 }
             }
@@ -238,10 +247,10 @@ class UsersController extends BaseController {
             $user  = User::where('email', $email)->first();
             if(!is_null($user)) {
                 // User exists. Check code
-                if($user->resetcode == $code) {
+                if($user->resetcode == $code && $code != 0) {
                     // Code matches. Reset password
                     $password = Input::get('password');
-                    $user->password = Hash::make($password);
+                    $user->password = $password;
                     $user->resetcode = 0;
                     $user->save();
                     return Redirect::to('login')->with([
@@ -251,7 +260,7 @@ class UsersController extends BaseController {
                 } else {
                     // Code does not match. Error.
                     $messagebag = new MessageBag([
-                        'general' => 'Code does not match email address. '
+                        'general' => 'Incorrect password reset code.'
                     ]);
                 }
             } else {
@@ -260,7 +269,8 @@ class UsersController extends BaseController {
                     'general' => 'Email address not found. Please check it and try again.'
                 ]);
             }
-            return Redirect::to('resetpassword')->withErrors($messagebag);
+            return Redirect::route('resetpassword', ['code' => $code])
+                ->withErrors($messagebag);
         }
     }
 
@@ -299,7 +309,7 @@ class UsersController extends BaseController {
                 ->withInput(Input::except('password', 'password_confirmation')) // send back the input (not the password) so that we can repopulate the form
                 ->with([
                     'alert-type' => 'danger',
-                    'alert-message' => 'Validation errors occoured. Please try again',
+                    'alert-message' => 'Validation errors occurred. Please try again',
                 ]);
         } else {
             $data = Input::except('password_confirmation', 'terms', 'username', '_token');

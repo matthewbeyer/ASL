@@ -7,8 +7,18 @@
     "twitterFetcher_v10_min",
     "contact",
     "scripts"
-]; ?>
+];
+$customCss = [
+    "dashboard",
+    "questions"
+];
+?>
 @extends('layout')
+
+
+@section('title')
+Questions | Honey May I
+@stop
 
 @section('content')
 
@@ -16,69 +26,99 @@
 <div id="page-loader"><span class="page-loader-gif"></span></div>
 
 
-<!-- ==============================================
-MAIN NAV
-=============================================== -->
-<div id="main-nav" class="navbar navbar-fixed-top">
-    <div class="container">
-
-        <div class="navbar-header">
-
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#site-nav">
-                <span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
-            </button>
-
-            <!-- ======= LOGO ========-->
-            <a class="navbar-brand" href="{{ URL::to('') }}"><img src="/images/hmilogo.png" alt=""/>"Honey May I"</a>
-
-        </div>
-
-        <div id="site-nav" class="navbar-collapse collapse">
-            <ul class="nav navbar-nav navbar-right">
-                <li class="sr-only">
-                    <a href="{{ URL::to('') }}">Home</a>
-                <li>
-                    <a href="#faq">FAQ's</a>
-                </li>
-                <li>
-                    <a href="#honeys">Honeys</a>
-                </li>
-                <li>
-                    <a href="{{ URL::route('myaccount') }}" >My Account</a>
-                </li>
-                <li>
-                    <a href="{{ URL::to('logout') }}">Logout</a>
-                </li>
-            </ul>
-        </div><!--End navbar-collapse -->
-
-    </div><!--End container -->
-
-</div><!--End main-nav -->
+@include('fragments.main-nav')
 
 <!-- ==============================================
 HEADER 2
 =============================================== -->
-<header id="home">
+<div id="dashboard">
 
     <div class="container text-center">
 
-        <p>{{ Auth::user()->firstname }}, welcome to</p>
+        <h1>Questions</h1>
 
-        <h1>"HONEY MAY I"</h1>
+        <h2>Your Top 5 Most Asked</h2>
+        @include('fragments.topQuestions', ['topQuestions' => $top5Questions])
 
-        <p>This is your dashboard, but I haven't got round to writing it yet. Coming soon!</p>
+        <h2>Your Questions</h2>
+        <section class="questions">
+            @if (count($userQuestions) == 0)
+            <p>
+                You have no custom questions.
+                Why not <a href="{{ URL::route('questions.create') }}">create</a> one?
+            </p>
+            @else
+            <a class="btn btn-default rightBtn" href="{{ URL::route('questions.create') }}">Create</a>
+            <div class="clearfix"></div>
+            <table class="table text-left">
+                <tr>
+                    <th>Honey May I...</th>
+                    <th>Stats</th>
+                    <th>Actions</th>
+                </tr>
+                @foreach ($userQuestions as $question)
+                <tr>
+                    <td>
+                        <a href="{{ URL::route('questions.show', ['question' => $question->id]) }}">
+                            {{ $question->question }}
+                        </a>
+                    </td>
+                    <td>
+                        <span class="statYes">
+                            <span class="glyphicon glyphicon-thumbs-up"></span>
+                            {{ $question->personalYesAnswerCountAsDecimal(Auth::user())*100 }}%
+                        </span><br />
+                        <span class="statNo">
+                            <span class="glyphicon glyphicon-thumbs-down"></span>
+                            {{ $question->personalNoAnswerCountAsDecimal(Auth::user())*100 }}%
+                        </span>
+                    </td>
+                    <td>
+                        <a href="{{ URL::route('questions.ask', ['question' => $question->id]) }}">
+                            ASK
+                        </a>
+                    </td>
+                </tr>
+                @endforeach
+            </table>
+            @endif
 
-        <!--
-        <table class="table">
-            <tr>
-                <th></th>
-            </tr>
-        </table>
-        -->
+            <h2>Default Questions</h2>
+            <table class="table text-left">
+                <tr>
+                    <th>Honey May I...</th>
+                    <th>Stats</th>
+                    <th>Actions</th>
+                </tr>
+                @foreach ($defaultQuestions as $question)
+                <tr>
+                    <td>
+                        <a href="{{ URL::route('questions.show', ['question' => $question->id]) }}">
+                            {{ $question->question }}
+                        </a>
+                    </td>
+                    <td>
+                        <span class="statYes">
+                            <span class="glyphicon glyphicon-thumbs-up"></span>
+                            {{ $question->personalYesAnswerCountAsDecimal(Auth::user())*100 }}%
+                        </span><br />
+                        <span class="statNo">
+                            <span class="glyphicon glyphicon-thumbs-down"></span>
+                            {{ $question->personalNoAnswerCountAsDecimal(Auth::user())*100 }}%
+                        </span>
+                    </td>
+                    <td>
+                        <a href="{{ URL::route('questions.ask', ['question' => $question->id]) }}">
+                            ASK
+                        </a>
+                    </td>
+                </tr>
+                @endforeach
+            </table>
+        </section>
 
     </div>
 
-</header><!--End header -->
+</div>
 
 @stop

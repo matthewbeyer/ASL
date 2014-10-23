@@ -67,4 +67,83 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
     {
         return $this->hasMany('Profile');
     }
+
+    /**
+     * Return the amount of requests which are pending for the user
+     *
+     * @return int
+     */
+    public function requestCount()
+    {
+        return DB::table('userlinkrequests')
+            ->where('them', $this->id)
+            ->count();
+    }
+
+    /**
+     * Get the number of Honeys the user has
+     *
+     * @return int
+     */
+    public function honeyCount()
+    {
+        return DB::table('userlink')
+            ->where('user1', $this->id)
+            ->orwhere('user2', $this->id)
+            ->count();
+    }
+
+    /**
+     * Return the list of Honey that the user has
+     *
+     * @return array of honeys (User objects)
+     */
+    public function honeys()
+    {
+        $honeys = [];
+        $userlinks = DB::table('userlink')
+            ->where('user1', $this->id)
+            ->orwhere('user2', $this->id)
+            ->get();
+        foreach ($userlinks as $link) {
+            $honeyID = ($link->user1 == $this->id)
+                ? $link->user2
+                : $link->user1;
+            $honeys[] = self::find($honeyID);
+        }
+        return $honeys;
+    }
+
+    public function honeysListForDropdown()
+    {
+        $honeys = [];
+        $userlinks = DB::table('userlink')
+            ->where('user1', $this->id)
+            ->orwhere('user2', $this->id)
+            ->get();
+        foreach ($userlinks as $link) {
+            $honeyID = ($link->user1 == $this->id)
+                ? $link->user2
+                : $link->user1;
+            $username = self::where('id', $honeyID)->pluck('username');
+            $honeys[$honeyID] = $username;
+        }
+        return $honeys;
+    }
+
+    /**
+     * Determine if the current user is the Honey of another given user
+     *
+     * @param User $user
+     *
+     * @return bool
+     */
+    public function isHoneysWith(User $user)
+    {
+        return (DB::table('userlink')
+                ->where(['user1' => $user->id, 'user2' => $this->id])
+                ->orwhere(['user2' => $user->id, 'user1' => $this->id])
+                ->count() !=0 );
+    }
+
 }

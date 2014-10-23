@@ -14,61 +14,83 @@ $(document).ready(function() {
 	/*============================================
 	Header
 	==============================================*/
-	
-	$('#home').height($(window).height()+50);
-	
-	$.backstretch('/images/bg-header6.jpg');
-	
-	$(window).scroll( function() {
-		var st = $(this).scrollTop(),
-			wh = $(window).height(),
-			sf = 1.2 - st/(10*wh);
-		
-		$('.backstretch img').css({ 
-			'transform' : 'scale('+sf+')', 
-			'-webkit-transform' : 'scale('+sf+')'
-		});
-		
-		$('#home .container').css({ 'opacity' : (1.4 - st/400) });
-		
-		if($(window).scrollTop() > ($(window).height()+50)){
-			$('.backstretch').hide();
-		}else{
-			$('.backstretch').show();
-		}
-		
-	});
-	
-	var st = $(this).scrollTop(),
-		wh = $(window).height(),
-		sf = 1.2 - st/(10*wh);
+	if (typeof(home) != "undefined") {
+        $('#home').height($(window).height()+50);
 
-	$('.backstretch img').css({ 
-		'transform' : 'scale('+sf+')', 
-		'-webkit-transform' : 'scale('+sf+')'
-	});
+        $.backstretch('/images/bg-header6.jpg');
 
-	$('#home .container').css({ 'opacity' : (1.4 - st/400) });
+        $(window).scroll( function() {
+            var st = $(this).scrollTop(),
+                wh = $(window).height(),
+                sf = 1.2 - st/(10*wh);
+
+            $('.backstretch img').css({
+                'transform' : 'scale('+sf+')',
+                '-webkit-transform' : 'scale('+sf+')'
+            });
+
+            $('#home .container').css({ 'opacity' : (1.4 - st/400) });
+
+            if($(window).scrollTop() > ($(window).height()+50)){
+                $('.backstretch').hide();
+            }else{
+                $('.backstretch').show();
+            }
+
+        });
+
+        var st = $(this).scrollTop(),
+            wh = $(window).height(),
+            sf = 1.2 - st/(10*wh);
+
+        $('.backstretch img').css({
+            'transform' : 'scale('+sf+')',
+            '-webkit-transform' : 'scale('+sf+')'
+        });
+
+        $('#home .container').css({ 'opacity' : (1.4 - st/400) });
+    } else {
+        $.backstretch('/images/q-a-bg.jpg');
+    }
+
     
 	
 	/*============================================
 	Navigation Functions
 	==============================================*/
-	if ($(window).scrollTop()< ($(window).height()-50)){
-		$('#main-nav').removeClass('scrolled');
-	}
-	else{
-		$('#main-nav').addClass('scrolled');    
-	}
+    if (typeof(home) != "undefined") {
+        if ($(window).scrollTop()< ($(window).height()-50)){
+            $('#main-nav').removeClass('scrolled');
+        }
+        else{
+            $('#main-nav').addClass('scrolled');
+        }
 
-	$(window).scroll(function(){
-		if ($(window).scrollTop()< ($(window).height()-50)){
-			$('#main-nav').removeClass('scrolled');
-		}
-		else{
-			$('#main-nav').addClass('scrolled');    
-		}
-	});
+        $(window).scroll(function(){
+            if ($(window).scrollTop()< ($(window).height()-50)){
+                $('#main-nav').removeClass('scrolled');
+            }
+            else{
+                $('#main-nav').addClass('scrolled');
+            }
+        });
+    } else {
+        if ($(window).scrollTop()< 114){
+            $('#main-nav').removeClass('scrolled');
+        }
+        else{
+            $('#main-nav').addClass('scrolled');
+        }
+
+        $(window).scroll(function(){
+            if ($(window).scrollTop()< 114){
+                $('#main-nav').removeClass('scrolled');
+            }
+            else{
+                $('#main-nav').addClass('scrolled');
+            }
+        });
+    }
 	
 	/*============================================
 	ScrollTo Links

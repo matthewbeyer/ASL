@@ -1,0 +1,36 @@
+#dashboard {
+  color: #fff;
+  max-width: 100%;
+  margin-top: 8em;
+  padding: 3em;
+  .welcome {
+    font-size: 32px;
+  }
+  h1 {
+    font-size: 28pt;
+  }
+  .alert-dashboard {
+    font-weight: bold;
+    &.alert-info {
+      background-color: rgba(217, 237, 247, 0.8);
+      a {
+        color: #7b1624;
+      }
+    }
+  }
+}
+.statYes {
+  color: #6eff6e;
+}
+.statNo {
+  color: #ff3b37;
+}
+.statYes-bg {
+  background-color: #4c984c !important;
+}
+.statNo-bg {
+  background-color: #982827 !important;
+}
+table tr th {
+  text-align: center;
+}

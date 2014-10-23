@@ -1,11 +1,16 @@
 <!DOCTYPE html>
-<html lang="en-US" class="no-js" xmlns="http://www.w3.org/1999/html">
+<html lang="en-US" class="no-js" xmlns="http://www.w3.org/1999/html" prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# honeymayi: http://ogp.me/ns/fb/honeymayi#">
 <head>
     <title>@yield('title', 'Honey May I')</title>
     <meta charset="utf-8" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    @if (!empty($customOGMeta))
+    @foreach ($customOGMeta as $name => $content)
+    <meta property="{{ $name }}" content="{{ $content }}" />
+    @endforeach
+    @endif
 
     <link rel="shortcut icon" href="/images/favicon.ico" />
 
@@ -13,7 +18,6 @@
     CSS
     =============================================== -->
     <link rel="stylesheet" href="/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="/css/font-awesome.min.css" />
     <link rel="stylesheet" href="/css/flexslider.css" />
     <link rel="stylesheet" href="/css/styles.css" />
 
@@ -37,6 +41,7 @@
     <script type="text/javascript" src="/js/libs/modernizr.min.js"></script>
 </head>
 <body data-spy="scroll" data-target="#main-nav" data-offset="200">
+    <div id="fb-root"></div>
     @if(Session::has('flash'))
     <div class="alert alert-dismissable alert-{{ Session::get('alert-type', 'info') }}" id="flashmsg">
         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>

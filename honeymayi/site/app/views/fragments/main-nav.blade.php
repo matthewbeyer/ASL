@@ -19,11 +19,26 @@ MAIN NAV
             <ul class="nav navbar-nav navbar-right">
                 <li class="sr-only">
                     <a href="{{ URL::to('') }}">Home</a>
+                </li>
+                @if (Auth::check())
                 <li>
-                    <a href="#faq">FAQ's</a>
+                    <a href="{{ URL::to('dashboard') }}">
+                        Dashboard
+                        @if (QuestionAsked::pendingForUserCount(Auth::user()) > 0)
+                            ({{ QuestionAsked::pendingForUserCount(Auth::user()) }})
+                        @endif
+                    </a>
                 </li>
                 <li>
-                    <a href="{{ URL::route('honeys') }}">Honeys</a>
+                    <a href="{{ URL::route('questions.index') }}">Questions</a>
+                </li>
+                <li>
+                    <a href="{{ URL::route('honeys') }}">
+                        Honeys
+                        @if (Auth::user()->requestCount() > 0)
+                            ({{ Auth::user()->requestCount() }})
+                        @endif
+                    </a>
                 </li>
                 <li>
                     <a href="{{ URL::route('myaccount') }}" >My Account</a>
@@ -31,6 +46,17 @@ MAIN NAV
                 <li>
                     <a href="{{ URL::to('logout') }}">Logout</a>
                 </li>
+                @else
+                <li>
+                    <a href="{{ URL::to('') }}">Home</a>
+                </li>
+                <li>
+                    <a href="{{ URL::route('login') }}">Login</a>
+                </li>
+                <li>
+                    <a href="{{ URL::route('signup') }}">Join</a>
+                </li>
+                @endif
             </ul>
         </div><!--End navbar-collapse -->
 

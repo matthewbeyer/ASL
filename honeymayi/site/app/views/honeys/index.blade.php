@@ -35,6 +35,10 @@ HEADER 2
     <div class="container text-center">
 
         <h1>{{ Auth::user()->firstname }}'s Honeys</h1>
+        <a href="{{ URL::route('honeyRequests') }}">
+            Pending Requests
+            ({{ Auth::user()->requestCount() }})
+        </a><br />
 
         <a class="btn btn-default honeyAdd" href="{{ URL::route('honeyAdd') }}">Add</a>
         <table class="table" id="honeytable">
@@ -53,6 +57,9 @@ HEADER 2
             </tr>
             @endforeach
         </table>
+        <p>
+            <a href="{{ URL::route('dashboard') }}">&larr; Back to Dashboard</a>
+        </p>
 
     </div>
 

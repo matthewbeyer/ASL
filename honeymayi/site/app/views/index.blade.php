@@ -7,6 +7,9 @@
     "twitterFetcher_v10_min",
     "contact",
     "scripts"
+];
+$customCss = [
+    "font-awesome.min"
 ]; ?>
 @extends('layout')
 
@@ -46,18 +49,12 @@
                     <li>
                         <a href="#about" class="scrollto">About Us</a>
                     </li>
-                    @if (!Auth::check())
                     <li>
                         <a href="{{ URL::route('login') }}">Login</a>
                     </li>
                     <li>
                         <a href="{{ URL::route('signup') }}">Join</a>
                     </li>
-                    @else
-                    <li>
-                        <a href="{{ URL::route('questions') }}">Dashboard</a>
-                    </li>
-                    @endif
                 </ul>
             </div><!--End navbar-collapse -->
 
@@ -184,7 +181,7 @@
 
     <script src="http://maps.google.com/maps/api/js?sensor=true"></script>
     <script>
-
+        var home = true;
         var mapPoint = {
             'lat': 40.720099,
             'lng': -74.005764,
